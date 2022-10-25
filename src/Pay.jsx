@@ -1,20 +1,21 @@
 import StripeCheckout from "react-stripe-checkout";
 import { useState, useEffect } from "react";
-import axios from 'axios';
-/* eslint-disable no-unused-expressions */
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 const KEY = "pk_test_51LuhSLDbcO07IR7AUtVqVgjtdVRRko6snMyXHkqbDzOqh69ZPK9aK1zilFg78ASywyLoOqEXRVkAuRGYfJVHAUr300hrKvF2wB"
 
 const Pay = () => {
-  const [stripeToken, setStripeToken] = useState(null)
+  const [stripeToken, setStripeToken] = useState(null);
+  const history = useNavigate()
 
   const onToken = (token) => {
     setStripeToken(token);
   };
 
-  useEffect(()=>{
-    const makeRequest = async () =>{
+  useEffect(() => {
+    const makeRequest = async () => {
       try {
         const res = await axios.post(
           "http://localhost:5000/api/checkout/payment", 
@@ -22,14 +23,15 @@ const Pay = () => {
             tokenId: stripeToken.id,
             amount: 2000,
           }
-          );
-          console.log(res.data);
-      }catch(err){
+        );
+        console.log(res.data);
+        history.push("/success")
+      } catch(err){
         console.log(err);
       }
     };
-    stripeToken && makeRequest
-  },[stripeToken]);
+    stripeToken && makeRequest()
+  },[stripeToken, history]);
 
   return (
     <div
@@ -47,8 +49,8 @@ const Pay = () => {
       shippingAddress
       description = "Your total is $20"
       amount = {2000}
-      token={onToken}
-      stripeKey= {KEY}
+      token = {onToken}
+      stripeKey = {KEY}
       >
         <button
           style={{
